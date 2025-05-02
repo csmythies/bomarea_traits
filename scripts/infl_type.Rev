@@ -1,4 +1,4 @@
-morpho <- readDiscreteCharacterData("data/type.nexus")
+morpho <- readDiscreteCharacterData("data/type_binary.nexus")
 
 phylogeny <- readTrees("data/bom_only_MAP.tre")[1]
 
@@ -6,15 +6,16 @@ moves = VectorMoves()
 monitors = VectorMonitors()
 
 rate_pr := phylogeny.treeLength() / 10
-mu ~ dnExp(rate_pr)
-moves.append( mvScale(mu, lambda=1, weight=2.0) )
 
-NUM_STATES = 3
+NUM_STATES = 2
+
 
 NUM_RATES = NUM_STATES * (NUM_STATES-1)
 for ( i in 1:NUM_RATES ) {
-    rate[i] := mu
+    rate[i] ~ dnExp(rate_pr)
+    moves.append( mvScale(rate[i], lambda=1, weight=2.0) )
 }
+
 
 Q_morpho := fnFreeK( rate, rescale=false )
 phyMorpho ~ dnPhyloCTMC(tree=phylogeny, Q=Q_morpho, type="Standard")

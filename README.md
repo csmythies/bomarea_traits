@@ -4,11 +4,7 @@ Step 1: Using raw data to make a nexus file of inflorescence types for Bomarea
         the excel sheet and categorizes the inflorescences into 3 types with the
         numerical labels: 0,1,2
     b. you should have "type.nexus" in your data file
-        taken from the wikipedia "The extensible NEXUS file format is widely used 
-        in bioinformatics. It stores information about taxa, morphological and 
-        molecular characters, distances, genetic codes, assumptions, sets, trees, etc"
-        i.e. very nice way to put information on species and inflorescence types
-        
+
 Step 2: Generate a tree using type.nexus and bom_only_MAP.tre
     a. Set working directory in zsh
         cd ~/Desktop/bomarea_traits/
@@ -52,15 +48,11 @@ Step 4: Create a Violin Plot using rates
         types
 
 
-Definitions:
-Inflorescences - arrangement of flowers on a floral axis (e.g. the brown part of a 
-sunflower are hundreds or little bitty flowers that make up an inflorescence)
-Genus - a order higher than species that groups together species
-Bomarea - genus of tropical plant that has a ton of diversity in it's inflorescences (look it up!)
-Phylogeny - "tree of life"; shows the relationships between organisms
-Herbarium - place where collections of pressed plants live
-Taxa - tips of the phylogeny
-Markov Chain Monte Carlo (MCMC) - way to randomly sample across a probability distribution 
-(how we get estimates for what their most recent common ancestor may have looked like and the rates of switches
-between the different inflorescence types)
+To run script in rb < infl_type_ard_binary.Rev
 
+ ii. run code to combine runs
+            awk 'FNR == 1 && NR != 1 { next } { print }' branchiness_run_1.txt branchiness_run_2.txt > branchiness_combined.txt
+        iii.run code to remove first 10% of code
+            total_lines=$(wc -l < branchiness_combined.txt)
+            skip_lines=$((total_lines / 10))
+            awk -v skip="$skip_lines" 'NR > skip || NR == 1' branchiness_combined.txt > branchiness_combined_trimmed.txt
