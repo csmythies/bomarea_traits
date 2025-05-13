@@ -1,91 +1,66 @@
-Step 1: Using raw data to make a nexus file of inflorescence types for Bomarea
-    a. run "bomareacode.R" on "bomarea traits.xlsx"
-<<<<<<< HEAD
-        this code takes the measurements of herbarium speciemens and data from
-        the excel sheet and categorizes the inflorescences into 3 types with the
-        numerical labels: 0,1,2
-=======
->>>>>>> b0573a8 (add changes to remote)
-    b. you should have "type.nexus" in your data file
+# Bomarea Trait Analysis (RevBayes, bash, R)
 
-Step 2: Generate a tree using type.nexus and bom_only_MAP.tre
-    a. Set working directory in zsh
-        cd ~/Desktop/bomarea_traits/
-    b. Open RevBayes in zsh and execute script
-<<<<<<< HEAD
-        i. enter rb in your terminal to run RevBayes
-        ii. run "infl_type_ard.Rev" script until "->"
-            this script will run the Markov Chain Monte Carlo (MCMC) on both the .tree file
-            (which has molecular data) and the .nexus file (which has our trait of
-            interest of interest), there is more information if you would like to more at 
-            https://revbayes.github.io/tutorials/mcmc/archery.html (super useful). Also, you can
-            run the entire script and it will stop at "->"; that's why that is there, I
-            just don't do it out of habit
-        iii. let it run until it's done
-        iv. keep window open
-    c. In zsh combine and remove first 10% of data
-        i. in another terminal window change directory to ~/Desktop/bomarea_traits/output
-        ii. run code to combine runs (.txt files)
-            awk 'FNR == 1 && NR != 1 { next } { print }' infl_type_ard_states_run_1.txt infl_type_ard_states_run_2.txt > infl_type_ard_states_combined.txt
-                the MCMC produces 2 sets of results, we want to combine those 2 without
-                repeating any of the column names
-=======
-        i. rb
-        ii. run "infl_type_ard.Rev" script until ->
-        iii. keep window open
-    c. In zsh combine and remove first 10% of data
-        i. change directory to ~/Desktop/bomarea_traits/output
-        ii. run code to combine runs
-            awk 'FNR == 1 && NR != 1 { next } { print }' infl_type_ard_states_run_1.txt infl_type_ard_states_run_2.txt > infl_type_ard_states_combined.txt
->>>>>>> b0573a8 (add changes to remote)
-        iii.run code to remove first 10% of code
-            total_lines=$(wc -l < infl_type_ard_states_combined.txt)
-            skip_lines=$((total_lines / 10))
-            awk -v skip="$skip_lines" 'NR > skip || NR == 1' infl_type_ard_states_combined.txt > infl_type_ard_states_combined_trimmed.txt
-<<<<<<< HEAD
-                the first 10% is the analysis callibrating, so we "burnin 10" to remove
-                the first 10%
-    d. Return to RevBayes window (the one where you ran the MCMC)
-        i. execute the two lines after "->"
-            calculates ancestral states (pie charts at the nodes of the phylogeny)
-            and a file so that you can make nice figures
-        ii. you should have "infl_type_ase_ard.tree" in your output folder
-                new tree to plot
+## Step 1: Using raw data to make a nexus file of inflorescence types for Bomarea
+1. Run `bomareacode.R` on `bomarea traits.xlsx`
+   - This code takes the measurements of herbarium specimens and data from the Excel sheet and categorizes traits: size, sparsity, branchiness, inflorescence type (binary and tertiary).
+2. You should have `.nexus` files in /data. In this example, inflorescence type will be used
 
-Step 3: Plot tree in R
-    a. Run "plotresults.R" with "infl_type_ase_ard.tree" and save the plot as a .png
-        makes a phylogeny with our trait of interest, species name, legend, and each node's ancestral states
+## Step 2: Generate a tree using `type.nexus` and `bom_only_MAP.tre`
+1. Set working directory in Zsh
+   ```bash
+   cd ~/Desktop/bomarea_traits/
+   ```
+2. Open RevBayes in Zsh and execute the script
+   - Enter `rb` in your terminal to run RevBayes.
+   - Run the `infl_type_ard.Rev` script until `->`.
+     - This script will run the Markov Chain Monte Carlo (MCMC) on both the `.tree` file (which has molecular data) and the `.nexus` file (which has our trait of interest). More information is available at [RevBayes Tutorial](https://revbayes.github.io/tutorials/mcmc/archery.html) (super useful). You can also run the entire script, which will stop at `->`; that's why it's there, but I don't do it out of habit.
+   - Let it run until it's done.
+   - Keep the window open.
 
-Step 4: Create a Violin Plot using rates
-    a. run "plotviolinrates.R" and save plot as .png
-        makes a violin plot with the rates of transitions between inflorescence 
-        types
-=======
-    d. Return to RevBayes window
-        i. execute the lines after ->
-        ii. you should have "infl_type_ase_ard.tree" in your output folder
+3. In bash, combine and remove the first 10% of data:
+   - In another terminal window, change directory to `~/Desktop/bomarea_traits/output`.
+   - Run the code to combine the runs (`.txt` files):
+     ```bash
+     awk 'FNR == 1 && NR != 1 { next } { print }' infl_type_ard_states_run_1.txt infl_type_ard_states_run_2.txt > infl_type_ard_states_combined.txt
+     ```
+     The MCMC produces 2 sets of results, and we want to combine them without repeating any of the column names.
+   - Run the code to remove the first 10% of the data:
+     ```bash
+     total_lines=$(wc -l < infl_type_ard_states_combined.txt)
+     skip_lines=$((total_lines / 10))
+     awk -v skip="$skip_lines" 'NR > skip || NR == 1' infl_type_ard_states_combined.txt > infl_type_ard_states_combined_trimmed.txt
+     ```
+     The first 10% is the analysis calibrating, so we "burnin 10" to remove the first 10%.
 
-Step 3: Plot tree in R
-    a. Run "plotresults.R" with "infl_type_ase_ard.tree" and save the plot as a .png
+4. Return to the RevBayes window (where you ran the MCMC):
+   - Execute the two lines after `->`.
+     - This calculates ancestral states (pie charts at the nodes of the phylogeny) and creates a file so you can make nice figures.
+   - You should have `infl_type_ase_ard.tree` in your output folder—this is the new tree to plot.
 
-Step 4: Create a Violin Plot using rates
-    a. run "plotviolinrates.R" and save plot as .png
->>>>>>> b0573a8 (add changes to remote)
+## Step 3: Plot the tree in R
+1. Run `plotresults.R` with `infl_type_ase_ard.tree` and save the plot as a `.png`.
+   - This will generate a phylogeny with our trait of interest, species name, a legend, and each node's ancestral states.
 
+## Step 4: Create a Violin Plot using rates
+1. Run `plotviolinrates.R` and save the plot as a `.png`.
+   - This will create a violin plot showing the rates of transitions between inflorescence types.
 
-To run script in rb < infl_type_ard_binary.Rev
+---
+# Notes
 
-<<<<<<< HEAD
-=======
+To run the script in RevBayes:
+```bash
+< infl_type_ard_binary.Rev
+```
 
-
-
-
-
->>>>>>> b0573a8 (add changes to remote)
- ii. run code to combine runs
-            awk 'FNR == 1 && NR != 1 { next } { print }' branchiness_run_1.txt branchiness_run_2.txt > branchiness_combined.txt
-        iii.run code to remove first 10% of code
-            total_lines=$(wc -l < branchiness_combined.txt)
-            skip_lines=$((total_lines / 10))
-            awk -v skip="$skip_lines" 'NR > skip || NR == 1' branchiness_combined.txt > branchiness_combined_trimmed.txt
+This is the same as Step 2, point 3, but with different file names:
+1. Run the code to combine runs (`.txt` files):
+   ```bash
+   awk 'FNR == 1 && NR != 1 { next } { print }' branchiness_run_1.txt branchiness_run_2.txt > branchiness_combined.txt
+   ```
+2. Run the code to remove the first 10% of the data:
+   ```bash
+   total_lines=$(wc -l < branchiness_combined.txt)
+   skip_lines=$((total_lines / 10))
+   awk -v skip="$skip_lines" 'NR > skip || NR == 1' branchiness_combined.txt > branchiness_combined_trimmed.txt
+   ```
